@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Publicaciones populares de r/Soccer y r/MLS</title>
+  <title>Hot Posts from r/Soccer and r/MLS</title>
   <style>
     /* Add your custom styles here */
 
@@ -80,21 +80,18 @@
       display: inline; /* Show the tick symbol when the post is clicked */
     }
 
+    .espanol-button {
+      color: white; /* Set the button color to white */
+      background-color: green; /* Set the background color of the button */
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
     body {
       background-color: black; /* Set the background color to black */
       color: white; /* Set the text color to white */
-    }
-
-    /* Spanish toggle button styles */
-    .toggle-button {
-      background-color: #22B14C; /* Green background color */
-      color: white; /* White text color */
-      padding: 5px 10px; /* Adjust padding as needed */
-      cursor: pointer;
-    }
-
-    .toggle-button.active {
-      background-color: #666666; /* Darker green background color for active state */
     }
   </style>
 </head>
@@ -105,16 +102,16 @@
   </div>
 
   <div class="tab-content active">
-    <h2>Publicaciones populares de r/Soccer</h2>
+    <h2>Hot Posts from r/Soccer</h2>
     <ul id="soccer-posts-list"></ul>
   </div>
 
   <div class="tab-content">
-    <h2>Publicaciones populares de r/MLS</h2>
+    <h2>Hot Posts from r/MLS</h2>
     <ul id="mls-posts-list"></ul>
   </div>
 
-  <div class="toggle-button" onclick="toggleLanguage()">Español</div>
+  <div class="espanol-button" onclick="switchLanguage()">Español</div>
 
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://unpkg.com/he/he.js"></script>
@@ -125,7 +122,6 @@
       const postLimit = 25; // Number of posts to scrape
       const skipPattern = /daily\s+discussion/i; // Regular expression to skip daily discussion variations
       const boldWords = ['confirmed', 'sings', 'complete'];
-      const language = isSpanish ? 'es' : 'en'; // Set language for translation
 
       try {
         const response = await axios.get(`https://www.reddit.com/r/${subreddit}/hot.json?limit=${postLimit}`, {
@@ -228,23 +224,7 @@
         return `$${dollars}`;
       });
 
-      if (isSpanish) {
-        // Translate title to Spanish
-        const languageTranslation = axios.post('https://api.mymemory.translated.net/get', {
-          q: title,
-          langpair: 'en|es',
-        }).then((response) => {
-          const translatedTitle = response.data.responseData.translatedText;
-          return translatedTitle;
-        }).catch((error) => {
-          console.error('Error occurred while translating:', error);
-          return title; // Return the original title if translation fails
-        });
-
-        return languageTranslation;
-      } else {
-        return title;
-      }
+      return title;
     }
 
     function formatDate(timestamp) {
@@ -293,17 +273,32 @@
       }
     }
 
-    function toggleLanguage() {
+    function switchLanguage() {
       isSpanish = !isSpanish;
+      const espanolButton = document.querySelector('.espanol-button');
+      if (isSpanish) {
+        espanolButton.textContent = 'English';
+        translateToSpanish();
+      } else {
+        espanolButton.textContent = 'Español';
+        translateToEnglish();
+      }
+    }
 
-      const toggleButton = document.querySelector('.toggle-button');
-      toggleButton.classList.toggle('active');
+    function translateToSpanish() {
+      const soccerTab = document.querySelector('.tab-content:nth-child(1) h2');
+      const mlsTab = document.querySelector('.tab-content:nth-child(2) h2');
 
-      // Fetch data for the active subreddit with the updated language
-      const activeTabIndex = Array.from(document.getElementsByClassName('tab')).findIndex((tab) =>
-        tab.classList.contains('active')
-      );
-      switchTab(activeTabIndex);
+      soccerTab.textContent = 'Publicaciones populares de r/Soccer';
+      mlsTab.textContent = 'Publicaciones populares de r/MLS';
+    }
+
+    function translateToEnglish() {
+      const soccerTab = document.querySelector('.tab-content:nth-child(1) h2');
+      const mlsTab = document.querySelector('.tab-content:nth-child(2) h2');
+
+      soccerTab.textContent = 'Hot Posts from r/Soccer';
+      mlsTab.textContent = 'Hot Posts from r/MLS';
     }
 
     // Call the scraping function for the initial tab
