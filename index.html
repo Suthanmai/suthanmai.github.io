@@ -93,8 +93,13 @@
   </div>
 
   <div class="tab-content active">
-    <h2>Hot Posts from Reddit</h2>
-    <ul id="posts-list"></ul>
+    <h2>Hot Posts from r/Soccer</h2>
+    <ul id="soccer-posts-list"></ul>
+  </div>
+
+  <div class="tab-content">
+    <h2>Hot Posts from r/MLS</h2>
+    <ul id="mls-posts-list"></ul>
   </div>
 
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -109,6 +114,7 @@
         const response = await axios.get(`https://www.reddit.com/r/${subreddit}/hot.json?limit=${postLimit}`, {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+            'Referrer-Policy': 'no-referrer',
           },
         });
 
@@ -247,10 +253,10 @@
 
       // Fetch data for the selected subreddit
       if (tabIndex === 0) {
-        scrapeReddit('soccer', 'posts-list');
+        scrapeReddit('soccer', 'soccer-posts-list');
         updatePostColors();
       } else if (tabIndex === 1) {
-        scrapeReddit('MLS', 'posts-list');
+        scrapeReddit('MLS', 'mls-posts-list');
         updatePostColors();
       }
     }
