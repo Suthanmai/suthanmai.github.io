@@ -195,4 +195,10 @@
     // Update every 5 minutes (300000 milliseconds)
     setInterval(() => {
       const activeTabIndex = Array.from(document.getElementsByClassName('tab')).findIndex((tab) =>
-        tab
+        tab.classList.contains('active')
+      );
+      switchTab(activeTabIndex);
+    }, 300000);
+  </script>
+</body>
+</html>
