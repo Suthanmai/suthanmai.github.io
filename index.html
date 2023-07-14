@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hot Posts from r/Soccer and r/MLS</title>
+  <title>Publicaciones populares de r/Soccer y r/MLS</title>
   <style>
     /* Add your custom styles here */
 
@@ -84,6 +84,18 @@
       background-color: black; /* Set the background color to black */
       color: white; /* Set the text color to white */
     }
+
+    /* Spanish toggle button styles */
+    .toggle-button {
+      background-color: #22B14C; /* Green background color */
+      color: white; /* White text color */
+      padding: 5px 10px; /* Adjust padding as needed */
+      cursor: pointer;
+    }
+
+    .toggle-button.active {
+      background-color: #666666; /* Darker green background color for active state */
+    }
   </style>
 </head>
 <body>
@@ -93,22 +105,27 @@
   </div>
 
   <div class="tab-content active">
-    <h2>Hot Posts from r/Soccer</h2>
+    <h2>Publicaciones populares de r/Soccer</h2>
     <ul id="soccer-posts-list"></ul>
   </div>
 
   <div class="tab-content">
-    <h2>Hot Posts from r/MLS</h2>
+    <h2>Publicaciones populares de r/MLS</h2>
     <ul id="mls-posts-list"></ul>
   </div>
+
+  <div class="toggle-button" onclick="toggleLanguage()">Español</div>
 
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://unpkg.com/he/he.js"></script>
   <script>
+    let isSpanish = false;
+
     async function scrapeReddit(subreddit, postsListId) {
       const postLimit = 25; // Number of posts to scrape
       const skipPattern = /daily\s+discussion/i; // Regular expression to skip daily discussion variations
       const boldWords = ['confirmed', 'sings', 'complete'];
+      const language = isSpanish ? 'es' : 'en'; // Set language for translation
 
       try {
         const response = await axios.get(`https://www.reddit.com/r/${subreddit}/hot.json?limit=${postLimit}`, {
@@ -211,7 +228,23 @@
         return `$${dollars}`;
       });
 
-      return title;
+      if (isSpanish) {
+        // Translate title to Spanish
+        const languageTranslation = axios.post('https://api.mymemory.translated.net/get', {
+          q: title,
+          langpair: 'en|es',
+        }).then((response) => {
+          const translatedTitle = response.data.responseData.translatedText;
+          return translatedTitle;
+        }).catch((error) => {
+          console.error('Error occurred while translating:', error);
+          return title; // Return the original title if translation fails
+        });
+
+        return languageTranslation;
+      } else {
+        return title;
+      }
     }
 
     function formatDate(timestamp) {
@@ -258,6 +291,19 @@
         scrapeReddit('MLS', 'mls-posts-list');
         updatePostColors();
       }
+    }
+
+    function toggleLanguage() {
+      isSpanish = !isSpanish;
+
+      const toggleButton = document.querySelector('.toggle-button');
+      toggleButton.classList.toggle('active');
+
+      // Fetch data for the active subreddit with the updated language
+      const activeTabIndex = Array.from(document.getElementsByClassName('tab')).findIndex((tab) =>
+        tab.classList.contains('active')
+      );
+      switchTab(activeTabIndex);
     }
 
     // Call the scraping function for the initial tab
