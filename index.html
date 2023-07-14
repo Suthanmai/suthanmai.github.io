@@ -48,15 +48,21 @@
 
     .line-item a {
       text-decoration: none; /* Remove underline from post links */
-      color: limegreen; /* Set post text color to lime green */
+      color: white; /* Set post text color to white */
     }
 
     .line-item.clicked a {
-      color: white; /* Set post text color to white when clicked */
+      color: #ffa500; /* Set post text color to light orange when clicked */
     }
 
     .line-item.clicked a:visited {
       color: lightgrey; /* Set post text color to light grey after clicked */
+    }
+
+    .timestamp {
+      font-size: 12px; /* Set font size to small */
+      color: lightgrey; /* Set timestamp color to light grey */
+      margin-left: 5px; /* Add margin to the left of the timestamp */
     }
 
     body {
@@ -132,7 +138,7 @@
 
             const timestamp = document.createElement('span');
             timestamp.classList.add('timestamp');
-            timestamp.textContent = formatDate(post.data.created_utc);
+            timestamp.textContent = '[' + formatDate(post.data.created_utc) + ']'; // Add brackets around the timestamp
 
             const titleLink = document.createElement('a');
             titleLink.href = directUrl;
