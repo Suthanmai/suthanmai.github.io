@@ -80,17 +80,6 @@
       display: inline; /* Show the tick symbol when the post is clicked */
     }
 
-    .espanol-button {
-      color: white; /* Set the button text color to white */
-      background-color: green; /* Set the button background color */
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-bottom: 10px;
-      position: relative;
-      z-index: 1; /* Adjust the z-index to bring the button to the front */
-    }
-
     body {
       background-color: black; /* Set the background color to black */
       color: white; /* Set the text color to white */
@@ -113,13 +102,9 @@
     <ul id="mls-posts-list"></ul>
   </div>
 
-  <div class="espanol-button" onclick="switchLanguage()">Español</div>
-
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://unpkg.com/he/he.js"></script>
   <script>
-    let isSpanish = false;
-
     async function scrapeReddit(subreddit, postsListId) {
       const postLimit = 25; // Number of posts to scrape
       const skipPattern = /daily\s+discussion/i; // Regular expression to skip daily discussion variations
@@ -141,10 +126,6 @@
         // Sort posts by most recent to least recent
         data.sort((a, b) => b.data.created_utc - a.data.created_utc);
 
-        // Fetch exchange rates
-        const exchangeRateResponse = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
-        const exchangeRates = exchangeRateResponse.data.rates;
-
         let count = 1;
 
         data.forEach((post) => {
@@ -164,7 +145,7 @@
 
             const postText = document.createElement('span');
             postText.classList.add('post-text');
-            postText.innerHTML = modifyTitleWithBoldWords(title, boldWords, exchangeRates);
+            postText.textContent = title;
 
             const tickSymbol = document.createElement('span');
             tickSymbol.classList.add('tick-symbol');
@@ -208,25 +189,6 @@
       } catch (error) {
         console.error('Error occurred while scraping:', error);
       }
-    }
-
-    function modifyTitleWithBoldWords(title, boldWords, exchangeRates) {
-      boldWords.forEach((word) => {
-        const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        title = title.replace(regex, `<span class="new-label">${word}</span>`);
-      });
-
-      title = title.replace(/£(\d+(?:\.\d+)?)/g, (_, value) => {
-        const dollars = (parseFloat(value) / exchangeRates['GBP']).toFixed(2);
-        return `$${dollars}`;
-      });
-
-      title = title.replace(/€(\d+(?:\.\d+)?)/g, (_, value) => {
-        const dollars = (parseFloat(value) / exchangeRates['EUR']).toFixed(2);
-        return `$${dollars}`;
-      });
-
-      return title;
     }
 
     function formatDate(timestamp) {
@@ -273,34 +235,6 @@
         scrapeReddit('MLS', 'mls-posts-list');
         updatePostColors();
       }
-    }
-
-    function switchLanguage() {
-      isSpanish = !isSpanish;
-      const espanolButton = document.querySelector('.espanol-button');
-      if (isSpanish) {
-        espanolButton.textContent = 'English';
-        translateToSpanish();
-      } else {
-        espanolButton.textContent = 'Español';
-        translateToEnglish();
-      }
-    }
-
-    function translateToSpanish() {
-      const soccerTab = document.querySelector('.tab-content:nth-child(1) h2');
-      const mlsTab = document.querySelector('.tab-content:nth-child(2) h2');
-
-      soccerTab.textContent = 'Publicaciones populares de r/Soccer';
-      mlsTab.textContent = 'Publicaciones populares de r/MLS';
-    }
-
-    function translateToEnglish() {
-      const soccerTab = document.querySelector('.tab-content:nth-child(1) h2');
-      const mlsTab = document.querySelector('.tab-content:nth-child(2) h2');
-
-      soccerTab.textContent = 'Hot Posts from r/Soccer';
-      mlsTab.textContent = 'Hot Posts from r/MLS';
     }
 
     // Call the scraping function for the initial tab
