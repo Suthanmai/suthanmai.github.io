@@ -5,34 +5,6 @@
   <style>
     /* Add your custom styles here */
 
-    /* Tab styles */
-    .tab-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .tab {
-      padding: 10px 20px;
-      background-color: #333333; /* Change the background color to a darker shade */
-      border: 1px solid #ccc;
-      cursor: pointer;
-    }
-
-    .tab.active {
-      background-color: #666666; /* Change the active tab background color to a darker shade */
-    }
-
-    /* Content styles */
-    .tab-content {
-      display: none;
-      padding: 20px;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
     /* Post styles */
     .line-item {
       margin-bottom: 10px; /* Add more space between each post */
@@ -87,10 +59,6 @@
   </style>
 </head>
 <body>
-  <div class="tab-container">
-    <div class="tab active">r/Soccer</div>
-  </div>
-
   <div class="tab-content active">
     <h2>Hot Posts from r/Soccer</h2>
     <ul id="soccer-posts-list"></ul>
@@ -105,10 +73,9 @@
       const boldWords = ['confirmed', 'sings', 'complete'];
 
       try {
-        const response = await axios.get(`https://www.reddit.com/r/${subreddit}/hot.json?limit=${postLimit}`, {
+        const response = await axios.get(`/api/reddit/${subreddit}`, {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-            'Referrer-Policy': 'no-referrer',
           },
         });
 
@@ -120,10 +87,6 @@
 
         // Sort posts by most recent to least recent
         data.sort((a, b) => b.data.created_utc - a.data.created_utc);
-
-        // Fetch exchange rates
-        const exchangeRateResponse = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
-        const exchangeRates = exchangeRateResponse.data.rates;
 
         let count = 1;
 
@@ -144,7 +107,7 @@
 
             const postText = document.createElement('span');
             postText.classList.add('post-text');
-            postText.innerHTML = modifyTitleWithBoldWords(title, boldWords, exchangeRates);
+            postText.innerHTML = title;
 
             const tickSymbol = document.createElement('span');
             tickSymbol.classList.add('tick-symbol');
@@ -190,58 +153,14 @@
       }
     }
 
-    function modifyTitleWithBoldWords(title, boldWords, exchangeRates) {
-      boldWords.forEach((word) => {
-        const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        title = title.replace(regex, `<span class="new-label">${word}</span>`);
-      });
-
-      title = title.replace(/£(\d+(?:\.\d+)?)/g, (_, value) => {
-        const dollars = (parseFloat(value) / exchangeRates['GBP']).toFixed(2);
-        return `$${dollars}`;
-      });
-
-      title = title.replace(/€(\d+(?:\.\d+)?)/g, (_, value) => {
-        const dollars = (parseFloat(value) / exchangeRates['EUR']).toFixed(2);
-        return `$${dollars}`;
-      });
-
-      return title;
-    }
-
     function formatDate(timestamp) {
       const date = new Date(timestamp * 1000);
       const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
       return date.toLocaleString('en-US', options) + ' PST';
     }
 
-    function updatePostColors() {
-      const lineItems = document.getElementsByClassName('line-item');
-      const currentTime = new Date().getTime();
-
-      Array.from(lineItems).forEach((item) => {
-        const timestamp = parseInt(item.getAttribute('data-timestamp'));
-        const timeElapsed = currentTime - timestamp;
-        if (timeElapsed < 1800000) {
-          item.classList.add('new-post');
-        } else if (timeElapsed < 3600000) {
-          item.classList.add('new-post', 'green');
-        } else {
-          item.classList.remove('new-post', 'green');
-          item.classList.add('black');
-        }
-      });
-    }
-
     // Call the scraping function for the initial tab
     scrapeReddit('soccer', 'soccer-posts-list');
-    updatePostColors();
-
-    // Update every 5 minutes (300000 milliseconds)
-    setInterval(() => {
-      scrapeReddit('soccer', 'soccer-posts-list');
-      updatePostColors();
-    }, 300000);
   </script>
 </body>
 </html>
