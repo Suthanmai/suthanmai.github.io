@@ -50,6 +50,10 @@
       text-decoration: none; /* Remove underline from post links */
       color: black; /* Set post text color to black */
     }
+
+    .line-item.clicked a {
+      color: red; /* Set post text color to red when clicked */
+    }
   </style>
 </head>
 <body>
@@ -123,6 +127,11 @@
 
             // Set timestamp attribute to current time in milliseconds
             listItem.setAttribute('data-timestamp', new Date().getTime());
+
+            // Add click event listener to the post
+            listItem.addEventListener('click', () => {
+              listItem.classList.toggle('clicked');
+            });
 
             count++;
           }
