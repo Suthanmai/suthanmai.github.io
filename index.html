@@ -58,6 +58,17 @@
     .line-item.clicked a:visited {
       color: lightgrey; /* Set post text color to light grey after clicked */
     }
+
+    .post-text {
+      display: flex;
+      align-items: center;
+    }
+
+    .post-text img {
+      width: 30px; /* Adjust the width as needed */
+      height: 30px; /* Adjust the height as needed */
+      margin-right: 10px; /* Add spacing between the crest image and the post title */
+    }
   </style>
 </head>
 <body>
@@ -118,9 +129,18 @@
             lineNumber.textContent = count + '.';
             listItem.appendChild(lineNumber);
 
-            const postText = document.createElement('span');
+            const postText = document.createElement('div');
             postText.classList.add('post-text');
-            postText.innerHTML = modifyTitleWithBoldWords(title, boldWords, exchangeRates);
+
+            const clubCrest = document.createElement('img');
+            clubCrest.src = 'images/Arsenal.png';
+            clubCrest.alt = 'Arsenal Crest';
+
+            const postTitle = document.createElement('span');
+            postTitle.innerHTML = modifyTitleWithBoldWords(title, boldWords, exchangeRates);
+
+            postText.appendChild(clubCrest);
+            postText.appendChild(postTitle);
 
             const titleLink = document.createElement('a');
             titleLink.href = directUrl;
