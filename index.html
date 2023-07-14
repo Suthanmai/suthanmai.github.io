@@ -40,7 +40,7 @@
 
     .line-item a {
       text-decoration: none; /* Remove underline from post links */
-      underline: false;
+      color: black; /* Set post text color to black */
     }
   </style>
 </head>
@@ -102,13 +102,14 @@
             lineNumber.textContent = count + '.';
             listItem.appendChild(lineNumber);
 
+            const postText = document.createElement('span');
+            postText.classList.add('post-text');
+            postText.innerHTML = modifyTitleWithBoldWords(title, boldWords, exchangeRates);
+
             const titleLink = document.createElement('a');
             titleLink.href = directUrl;
+            titleLink.appendChild(postText);
 
-            const titleSpan = document.createElement('span');
-            titleSpan.innerHTML = modifyTitleWithBoldWords(title, boldWords, exchangeRates);
-
-            titleLink.appendChild(titleSpan);
             listItem.appendChild(titleLink);
             postsList.appendChild(listItem);
 
