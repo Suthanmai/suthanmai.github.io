@@ -124,6 +124,7 @@
 
             const titleLink = document.createElement('a');
             titleLink.href = directUrl;
+            titleLink.target = '_blank'; // Open the link in a new tab
             titleLink.appendChild(postText);
 
             listItem.appendChild(titleLink);
