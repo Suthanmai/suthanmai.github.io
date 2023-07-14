@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hot Posts from r/Soccer and r/MLS</title>
+  <title>Hot Posts from r/Soccer</title>
   <style>
     /* Add your custom styles here */
 
@@ -88,18 +88,12 @@
 </head>
 <body>
   <div class="tab-container">
-    <div class="tab active" onclick="switchTab(0)">r/Soccer</div>
-    <div class="tab" onclick="switchTab(1)">r/MLS</div>
+    <div class="tab active">r/Soccer</div>
   </div>
 
   <div class="tab-content active">
     <h2>Hot Posts from r/Soccer</h2>
     <ul id="soccer-posts-list"></ul>
-  </div>
-
-  <div class="tab-content">
-    <h2>Hot Posts from r/MLS</h2>
-    <ul id="mls-posts-list"></ul>
   </div>
 
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -239,37 +233,14 @@
       });
     }
 
-    function switchTab(tabIndex) {
-      const tabs = document.getElementsByClassName('tab');
-      const tabContents = document.getElementsByClassName('tab-content');
-
-      // Remove active class from all tabs and tab contents
-      Array.from(tabs).forEach((tab) => tab.classList.remove('active'));
-      Array.from(tabContents).forEach((content) => content.classList.remove('active'));
-
-      // Add active class to the selected tab and tab content
-      tabs[tabIndex].classList.add('active');
-      tabContents[tabIndex].classList.add('active');
-
-      // Fetch data for the selected subreddit
-      if (tabIndex === 0) {
-        scrapeReddit('soccer', 'soccer-posts-list');
-        updatePostColors();
-      } else if (tabIndex === 1) {
-        scrapeReddit('MLS', 'mls-posts-list');
-        updatePostColors();
-      }
-    }
-
     // Call the scraping function for the initial tab
-    switchTab(0);
+    scrapeReddit('soccer', 'soccer-posts-list');
+    updatePostColors();
 
     // Update every 5 minutes (300000 milliseconds)
     setInterval(() => {
-      const activeTabIndex = Array.from(document.getElementsByClassName('tab')).findIndex((tab) =>
-        tab.classList.contains('active')
-      );
-      switchTab(activeTabIndex);
+      scrapeReddit('soccer', 'soccer-posts-list');
+      updatePostColors();
     }, 300000);
   </script>
 </body>
