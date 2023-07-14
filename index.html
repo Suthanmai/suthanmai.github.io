@@ -97,11 +97,14 @@
         // Clear existing list items
         postsList.innerHTML = '';
 
-        let count = 1;
+        // Sort posts by most recent to least recent
+        data.sort((a, b) => b.data.created_utc - a.data.created_utc);
 
         // Fetch exchange rates
         const exchangeRateResponse = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
         const exchangeRates = exchangeRateResponse.data.rates;
+
+        let count = 1;
 
         data.forEach((post) => {
           const title = he.decode(post.data.title);
@@ -122,12 +125,17 @@
             postText.classList.add('post-text');
             postText.innerHTML = modifyTitleWithBoldWords(title, boldWords, exchangeRates);
 
+            const timestamp = document.createElement('span');
+            timestamp.classList.add('timestamp');
+            timestamp.textContent = formatDate(post.data.created_utc);
+
             const titleLink = document.createElement('a');
             titleLink.href = directUrl;
             titleLink.target = '_blank'; // Open the link in a new tab
             titleLink.appendChild(postText);
 
             listItem.appendChild(titleLink);
+            listItem.appendChild(timestamp);
             postsList.appendChild(listItem);
 
             // Set timestamp attribute to current time in milliseconds
@@ -163,6 +171,12 @@
       });
 
       return title;
+    }
+
+    function formatDate(timestamp) {
+      const date = new Date(timestamp * 1000);
+      const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+      return date.toLocaleString('en-US', options) + ' PST';
     }
 
     function updatePostColors() {
