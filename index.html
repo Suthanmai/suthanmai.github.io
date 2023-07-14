@@ -69,6 +69,17 @@
       margin-left: 5px; /* Add margin to the left of the timestamp */
     }
 
+    .tick-symbol {
+      color: red; /* Change the color to your desired color */
+      font-size: 12px; /* Adjust the font size as needed */
+      margin-left: 5px; /* Add margin to the left of the tick symbol */
+      display: none; /* Hide the tick symbol by default */
+    }
+
+    .line-item.clicked .tick-symbol {
+      display: inline; /* Show the tick symbol when the post is clicked */
+    }
+
     body {
       background-color: black; /* Set the background color to black */
       color: white; /* Set the text color to white */
@@ -140,6 +151,10 @@
             postText.classList.add('post-text');
             postText.innerHTML = modifyTitleWithBoldWords(title, boldWords, exchangeRates);
 
+            const tickSymbol = document.createElement('span');
+            tickSymbol.classList.add('tick-symbol');
+            tickSymbol.textContent = '✔'; // Tick symbol
+
             const timestamp = document.createElement('span');
             timestamp.classList.add('timestamp');
             timestamp.textContent = '[' + formatDate(post.data.created_utc) + ']'; // Add brackets around the timestamp
@@ -148,6 +163,7 @@
             titleLink.href = directUrl;
             titleLink.target = '_blank'; // Open the link in a new tab
             titleLink.appendChild(postText);
+            titleLink.appendChild(tickSymbol);
 
             listItem.appendChild(titleLink);
             listItem.appendChild(timestamp);
