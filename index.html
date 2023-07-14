@@ -172,9 +172,19 @@
             // Set timestamp attribute to current time in milliseconds
             listItem.setAttribute('data-timestamp', new Date().getTime());
 
+            // Restore clicked state from local storage
+            const localStorageKey = `clicked_${subreddit}_${count}`;
+            const isClicked = localStorage.getItem(localStorageKey);
+            if (isClicked === 'true') {
+              listItem.classList.add('clicked');
+            }
+
             // Add click event listener to the post
             listItem.addEventListener('click', () => {
               listItem.classList.toggle('clicked');
+
+              // Update local storage with the clicked state
+              localStorage.setItem(localStorageKey, listItem.classList.contains('clicked'));
             });
 
             count++;
