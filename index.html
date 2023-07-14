@@ -84,6 +84,31 @@
       background-color: black; /* Set the background color to black */
       color: white; /* Set the text color to white */
     }
+
+    /* Responsive Styles */
+    @media screen and (max-width: 768px) {
+      .tab-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .tab {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .tab-content {
+        padding: 10px;
+      }
+
+      .line-item {
+        flex-direction: column;
+      }
+
+      .line-item .line-number {
+        margin-bottom: 5px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -126,6 +151,10 @@
         // Sort posts by most recent to least recent
         data.sort((a, b) => b.data.created_utc - a.data.created_utc);
 
+        // Fetch exchange rates
+        const exchangeRateResponse = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
+        const exchangeRates = exchangeRateResponse.data.rates;
+
         let count = 1;
 
         data.forEach((post) => {
@@ -145,7 +174,7 @@
 
             const postText = document.createElement('span');
             postText.classList.add('post-text');
-            postText.textContent = title;
+            postText.innerHTML = modifyTitleWithBoldWords(title, boldWords, exchangeRates);
 
             const tickSymbol = document.createElement('span');
             tickSymbol.classList.add('tick-symbol');
@@ -189,6 +218,25 @@
       } catch (error) {
         console.error('Error occurred while scraping:', error);
       }
+    }
+
+    function modifyTitleWithBoldWords(title, boldWords, exchangeRates) {
+      boldWords.forEach((word) => {
+        const regex = new RegExp(`\\b${word}\\b`, 'gi');
+        title = title.replace(regex, `<span class="new-label">${word}</span>`);
+      });
+
+      title = title.replace(/£(\d+(?:\.\d+)?)/g, (_, value) => {
+        const dollars = (parseFloat(value) / exchangeRates['GBP']).toFixed(2);
+        return `$${dollars}`;
+      });
+
+      title = title.replace(/€(\d+(?:\.\d+)?)/g, (_, value) => {
+        const dollars = (parseFloat(value) / exchangeRates['EUR']).toFixed(2);
+        return `$${dollars}`;
+      });
+
+      return title;
     }
 
     function formatDate(timestamp) {
