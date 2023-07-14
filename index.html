@@ -93,13 +93,8 @@
   </div>
 
   <div class="tab-content active">
-    <h2>Hot Posts from r/Soccer</h2>
-    <ul id="soccer-posts-list"></ul>
-  </div>
-
-  <div class="tab-content">
-    <h2>Hot Posts from r/MLS</h2>
-    <ul id="mls-posts-list"></ul>
+    <h2>Hot Posts from Reddit</h2>
+    <ul id="posts-list"></ul>
   </div>
 
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -252,10 +247,10 @@
 
       // Fetch data for the selected subreddit
       if (tabIndex === 0) {
-        scrapeReddit('soccer', 'soccer-posts-list');
+        scrapeReddit('soccer', 'posts-list');
         updatePostColors();
       } else if (tabIndex === 1) {
-        scrapeReddit('MLS', 'mls-posts-list');
+        scrapeReddit('MLS', 'posts-list');
         updatePostColors();
       }
     }
