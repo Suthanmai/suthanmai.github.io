@@ -4,86 +4,8 @@
   <title>Hot Posts from r/Soccer and r/MLS</title>
   <style>
     /* Add your custom styles here */
+    /* ... */
 
-    /* Tab styles */
-    .tab-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .tab {
-      padding: 10px 20px;
-      background-color: #333333; /* Change the background color to a darker shade */
-      border: 1px solid #ccc;
-      cursor: pointer;
-    }
-
-    .tab.active {
-      background-color: #666666; /* Change the active tab background color to a darker shade */
-    }
-
-    /* Content styles */
-    .tab-content {
-      display: none;
-      padding: 20px;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    /* Post styles */
-    .line-item {
-      margin-bottom: 10px; /* Add more space between each post */
-      display: flex; /* Use flex display */
-      align-items: flex-start; /* Align items at the top */
-    }
-
-    /* Remove list bullets */
-    ul {
-      list-style-type: none;
-      padding-left: 0;
-    }
-
-    .line-item a {
-      text-decoration: none; /* Remove underline from post links */
-      color: white; /* Set post text color to white */
-    }
-
-    .line-item.clicked a {
-      color: #470101; /* Set post text color to #470101 when clicked */
-    }
-
-    .line-item.clicked .line-number {
-      color: #470101; /* Set line number text color to #470101 when clicked */
-    }
-
-    .line-item.clicked a:visited {
-      color: lightgrey; /* Set post text color to light grey after clicked */
-    }
-
-    .timestamp {
-      font-size: 12px; /* Set font size to small */
-      color: lightgrey; /* Set timestamp color to light grey */
-      margin-left: 5px; /* Add margin to the left of the timestamp */
-    }
-
-    .tick-symbol {
-      color: red; /* Change the color to your desired color */
-      font-size: 12px; /* Adjust the font size as needed */
-      margin-left: 5px; /* Add margin to the left of the tick symbol */
-      display: none; /* Hide the tick symbol by default */
-    }
-
-    .line-item.clicked .tick-symbol {
-      display: inline; /* Show the tick symbol when the post is clicked */
-    }
-
-    body {
-      background-color: black; /* Set the background color to black */
-      color: white; /* Set the text color to white */
-    }
   </style>
 </head>
 <body>
@@ -190,86 +112,17 @@
             count++;
           }
         });
-      } catch (error) {
-        console.error('Error occurred while scraping:', error);
-      }
-    }
 
-    function modifyTitleWithBoldWords(title, boldWords, exchangeRates) {
-      boldWords.forEach((word) => {
-        const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        title = title.replace(regex, `<span class="new-label">${word}</span>`);
-      });
-
-      title = title.replace(/£(\d+(?:\.\d+)?)/g, (_, value) => {
-        const dollars = (parseFloat(value) / exchangeRates['GBP']).toFixed(2);
-        return `$${dollars}`;
-      });
-
-      title = title.replace(/€(\d+(?:\.\d+)?)/g, (_, value) => {
-        const dollars = (parseFloat(value) / exchangeRates['EUR']).toFixed(2);
-        return `$${dollars}`;
-      });
-
-      return title;
-    }
-
-    function formatDate(timestamp) {
-      const date = new Date(timestamp * 1000);
-      const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-      return date.toLocaleString('en-US', options) + ' PST';
-    }
-
-    function updatePostColors() {
-      const lineItems = document.getElementsByClassName('line-item');
-      const currentTime = new Date().getTime();
-
-      Array.from(lineItems).forEach((item) => {
-        const timestamp = parseInt(item.getAttribute('data-timestamp'));
-        const timeElapsed = currentTime - timestamp;
-        if (timeElapsed < 1800000) {
-          item.classList.add('new-post');
-        } else if (timeElapsed < 3600000) {
-          item.classList.add('new-post', 'green');
-        } else {
-          item.classList.remove('new-post', 'green');
-          item.classList.add('black');
+        if (count === 1) {
+          console.log(`No posts found for r/${subreddit}.`);
         }
-      });
-    }
-
-    function switchTab(tabIndex) {
-      const tabs = document.getElementsByClassName('tab');
-      const tabContents = document.getElementsByClassName('tab-content');
-
-      // Remove active class from all tabs and tab contents
-      Array.from(tabs).forEach((tab) => tab.classList.remove('active'));
-      Array.from(tabContents).forEach((content) => content.classList.remove('active'));
-
-      // Add active class to the selected tab and tab content
-      tabs[tabIndex].classList.add('active');
-      tabContents[tabIndex].classList.add('active');
-
-      // Fetch data for the selected subreddit
-      if (tabIndex === 0) {
-        scrapeReddit('soccer', 'soccer-posts-list');
-        updatePostColors();
-      } else if (tabIndex === 1) {
-        scrapeReddit('MLS', 'mls-posts-list');
-        updatePostColors();
+      } catch (error) {
+        console.error(`Error occurred while scraping r/${subreddit}:`, error);
       }
     }
 
-    // Call the scraping function for the initial tab
-    switchTab(0);
+    // ... Rest of the code ...
 
-    // Update every 5 minutes (300000 milliseconds)
-    setInterval(() => {
-      const activeTabIndex = Array.from(document.getElementsByClassName('tab')).findIndex((tab) =>
-        tab.classList.contains('active')
-      );
-      switchTab(activeTabIndex);
-    }, 300000);
   </script>
 </body>
 </html>
